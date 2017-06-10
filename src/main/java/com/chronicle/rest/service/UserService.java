@@ -1,7 +1,5 @@
 package com.chronicle.rest.service;
 
-import java.util.List;
-
 import com.chronicle.dto.user.User;
 import com.chronicle.rest.dto.ApiResponse;
 
@@ -9,12 +7,12 @@ public interface UserService {
 
 	ApiResponse findAllUsers();
 
-	ApiResponse getUser();
+	ApiResponse getUser(long id);
 
 	User findById(long id);
 
-	ApiResponse createUser();
+	String createUser(User user);
 
-	void updateUser(User currentUser);
+	String updateUser(User currentUser);
 
 }

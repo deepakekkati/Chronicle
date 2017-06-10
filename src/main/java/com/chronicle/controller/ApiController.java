@@ -1,56 +1,40 @@
 package com.chronicle.controller;
 
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import com.chronicle.rest.dro.error.ExexError;
-import com.chronicle.rest.dro.error.StatusResponse;
 import com.chronicle.rest.dto.ApiResponse;
-import com.chronicle.rest.service.LoginService;
 import com.chronicle.rest.service.UserService;
 import com.chronicle.dto.user.*;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.List;
 
-@Slf4j
-@RestController
+@Controller
 public class ApiController extends MainController {
 
-    @Autowired
-    @Setter
-    private LoginService loginService;
-    
     @Autowired
     @Setter
     private UserService userService;
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @RequestMapping(value = "/login", 
-    		method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ApiResponse getHomePageHeadlines() {
-    	logger.info("/login : {}");
-        return loginService.getLoginFromApi("1");
-    }
-
     @RequestMapping(
             value = {"/login/{id}/{pswd}"},
             method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ApiResponse getPressRelease(@PathVariable Long id) {
-    	logger.info("login with id : {}"+id);    	
-    	return loginService.getLoginFromApi(id);
+    public String getPressRelease(@PathVariable Long id, String password) {
+    	logger.info("login with id : {}"+id);   
+    	User user = userService.findById(id);
+    	if(user.getPassword() == password ){
+    		return user.getRole();
+    	} else {
+    		return "User Doesn't exist";
+    	}
     }
     
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public ApiResponse listAllUsers() {
     	logger.info("list all Users : {}");
         return userService.findAllUsers();
@@ -59,29 +43,32 @@ public class ApiController extends MainController {
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     public ApiResponse getUser(@PathVariable("id") long id) {
         logger.info("Fetching User with id {}", id);
-    	return userService.getUser();
+    	return userService.getUser(id);
     }
     
     @RequestMapping(value = "/user", method = RequestMethod.POST)
-    public ApiResponse createUser(@RequestBody User user, UriComponentsBuilder ucBuilder) {
-        logger.info("Creating User : {}", user);
-    	return userService.createUser();
+    public String createUser(@RequestBody User user) {
+    	try {
+    		  userService.createUser(user);
+    	    }
+    	    catch (Exception ex) {
+    	      return "Error updating the user: " + ex.toString();
+    	    }
+    	return "User succesfully updated!";
     }
     
     @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT, consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ApiResponse updateUser(@PathVariable("id") long id, @RequestBody User user) {
-        //logger.info("Updating User with id {}", id);
+    public String updateUser(@PathVariable("id") long id, @RequestBody User user) {
         User currentUser = userService.findById(id);
         if (currentUser == null) {
-            logger.error("Unable to update. User with id {} not found.", id);
-            ExexError error = new ExexError("Unable to upate. User with id " + id + " not found.");
-            return error;
+        	return "error occured";
+        } else{
+        	if( user.getName() != null){
+        	currentUser.setName(user.getName());
+        	}
         }
- 
-        currentUser.setName(user.getName());
- 
         userService.updateUser(currentUser);
-        return new StatusResponse(HttpStatus.OK);
+        return "successful";
     }
  
 }
