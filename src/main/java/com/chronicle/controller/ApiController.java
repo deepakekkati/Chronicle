@@ -24,7 +24,7 @@ public class ApiController extends MainController {
     @RequestMapping(
             value = {"/login/{id}/{pswd}"},
             method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public String getPressRelease(@PathVariable Long id, String password) {
+    public String login(@PathVariable Long id, String password) {
     	logger.info("login with id : {}"+id);   
     	User user = userService.findById(id);
     	if(user.getPassword() == password ){
