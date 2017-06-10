@@ -27,7 +27,8 @@ public class ApiController extends MainController {
     public String login(@PathVariable Long id, @PathVariable String password) {
     	logger.info("login with id : {}"+id);   
     	User user = userService.findById(id);
-    	// password check
+    	System.out.println(user.getPassword());
+    	System.out.println(password);
     	if(user.getPassword().equals( password ) ){
     		return user.getRole();
     	} else {
