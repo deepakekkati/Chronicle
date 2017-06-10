@@ -22,12 +22,14 @@ public class ApiController extends MainController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @RequestMapping(
-            value = {"/login/{id}/{pswd}"},
+            value = {"/login/{id}/{password}"},
             method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public String login(@PathVariable Long id, String password) {
+    public String login(@PathVariable Long id, @PathVariable String password) {
     	logger.info("login with id : {}"+id);   
     	User user = userService.findById(id);
-    	if(user.getPassword() == password ){
+    	System.out.println(user.getPassword());
+    	System.out.println(password);
+    	if(user.getPassword().equals( password ) ){
     		return user.getRole();
     	} else {
     		return "User Doesn't exist";
