@@ -3,9 +3,10 @@ package com.chronicle.rest.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
 import com.chronicle.dto.user.User;
@@ -20,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Qualifier("userService")
 public class UserServiceImpl implements UserService{
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
 	@Setter
@@ -30,7 +33,7 @@ public class UserServiceImpl implements UserService{
 		// TODO Auto-generated method stub
 		try {
 			userDao.save(user);
-			System.out.println(userDao.save(user)+"  here in userServiceImpl createUser method");
+			logger.info(userDao.save(user)+"  here in userServiceImpl createUser method");
 		}
 		catch (Exception e){
 			return "Error creating user: " +e.toString();
@@ -43,7 +46,7 @@ public class UserServiceImpl implements UserService{
 
 		try {
 			userDao.save(currentUser);
-			System.out.println(userDao.save(currentUser)+"  here in userServiceImpl createUser method");
+			logger.info(userDao.save(currentUser)+"  here in userServiceImpl createUser method");
 		}
 		catch (Exception e){
 			return "Error creating user: " +e.toString();
@@ -54,14 +57,13 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public ApiResponse findAllUsers() {
-		//List<User> users = null;
 		UserResponse users = new UserResponse();
 		try {
 			users.setList( userDao.findAll());
-			System.out.println("  retriving all users");
+			logger.info("  retriving all users");
 		}
 		catch (Exception e){
-			System.out.println("error occured");
+			logger.info("error occured "+e);
 		}
 		return users ;
 	}
@@ -73,10 +75,10 @@ public class UserServiceImpl implements UserService{
 			List<User> user = new ArrayList<User>();
 			user.add(userDao.findOne(id));
 			users.setList( user );
-			System.out.println("  retriving all users");
+			logger.info("  retriving all users");
 		}
 		catch (Exception e){
-			System.out.println("error occured");
+			logger.info("error occured "+e);
 		}
 		return users ;
 	}
@@ -86,10 +88,10 @@ public class UserServiceImpl implements UserService{
 		User user = null;
 		try {
 			user = userDao.findOne(id);
-			System.out.println("  retriving all users");
+			logger.info("  retriving all users");
 		}
 		catch (Exception e){
-			System.out.println("error occured");
+			logger.info("error occured "+e);
 		}
 		return user ;
 	}
